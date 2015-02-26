@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.folderviewpagerdemo.view.IntegrateFolderPage xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.example.folderviewpagerdemo.view.IntegrateFolderGridView
+        android:id="@+id/folder_content_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/folder_page_grid_seperator1"
+        android:layout_width="match_parent"
+        android:layout_height="2.0px"
+        android:layout_alignParentTop="true"
+        android:background="#66ffffff"
+        android:visibility="invisible" />
+
+    <View
+        android:id="@+id/folder_page_grid_seperator2"
+        android:layout_width="match_parent"
+        android:layout_height="2.0px"
+        android:layout_alignParentBottom="true"
+        android:background="#66ffffff"
+        android:visibility="invisible" />
+
+</com.example.folderviewpagerdemo.view.IntegrateFolderPage>
