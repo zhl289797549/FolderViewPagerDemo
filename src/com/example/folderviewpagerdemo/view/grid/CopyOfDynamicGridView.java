@@ -1,8 +1,10 @@
 package com.example.folderviewpagerdemo.view.grid;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -15,6 +17,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -32,7 +35,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.animation.ValueAnimator;
 
-public class DynamicGridView extends GridView {
+public class CopyOfDynamicGridView extends GridView {
     private static final int INVALID_ID = -1;
 
     private static final int MOVE_DURATION = 300;
@@ -121,6 +124,10 @@ public class DynamicGridView extends GridView {
         }
     };
 
+    private boolean mUndoSupportEnabled;
+    private Stack<DynamicGridModification> mModificationStack;
+    private DynamicGridModification mCurrentModification;
+
     /**
      * 在view的btimapdrawable的创建前后的监听
      */
@@ -128,17 +135,17 @@ public class DynamicGridView extends GridView {
     private View mMobileView;
 
 
-    public DynamicGridView(Context context) {
+    public CopyOfDynamicGridView(Context context) {
         super(context);
         init(context);
     }
 
-    public DynamicGridView(Context context, AttributeSet attrs) {
+    public CopyOfDynamicGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public DynamicGridView(Context context, AttributeSet attrs, int defStyle) {
+    public CopyOfDynamicGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
@@ -215,11 +222,64 @@ public class DynamicGridView extends GridView {
         super.setOnItemClickListener(mLocalItemClickListener);
     }
 
+    public boolean isUndoSupportEnabled() {
+        return mUndoSupportEnabled;
+    }
+
+    public void setUndoSupportEnabled(boolean undoSupportEnabled) {
+        if (this.mUndoSupportEnabled != undoSupportEnabled) {
+            if (undoSupportEnabled) {
+                this.mModificationStack = new Stack<DynamicGridModification>();
+            } else {
+                this.mModificationStack = null;
+            }
+        }
+
+        this.mUndoSupportEnabled = undoSupportEnabled;
+    }
+
+    public void undoLastModification() {
+        if (mUndoSupportEnabled) {
+            if (mModificationStack != null && !mModificationStack.isEmpty()) {
+                DynamicGridModification modification = mModificationStack.pop();
+                undoModification(modification);
+            }
+        }
+    }
+
+    public void undoAllModifications() {
+        if (mUndoSupportEnabled) {
+            if (mModificationStack != null && !mModificationStack.isEmpty()) {
+                while (!mModificationStack.isEmpty()) {
+                    DynamicGridModification modification = mModificationStack.pop();
+                    undoModification(modification);
+                }
+            }
+        }
+    }
+
+    public boolean hasModificationHistory() {
+        if (mUndoSupportEnabled) {
+            if (mModificationStack != null && !mModificationStack.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void clearModificationHistory() {
+        mModificationStack.clear();
+    }
 
     public void setOnSelectedItemBitmapCreationListener(OnSelectedItemBitmapCreationListener selectedItemBitmapCreationListener) {
         this.mSelectedItemBitmapCreationListener = selectedItemBitmapCreationListener;
     }
 
+    private void undoModification(DynamicGridModification modification) {
+        for (Pair<Integer, Integer> transition : modification.getTransitions()) {
+            reorderElements(transition.second, transition.first);
+        }
+    }
 
     public void init(Context context) {
         super.setOnScrollListener(mScrollListener);
@@ -372,6 +432,14 @@ public class DynamicGridView extends GridView {
 
             case MotionEvent.ACTION_UP:
                 touchEventsEnded();
+
+                if (mUndoSupportEnabled) {
+                    if (mCurrentModification != null && !mCurrentModification.getTransitions().isEmpty()) {
+                        mModificationStack.push(mCurrentModification);
+                        mCurrentModification = new DynamicGridModification();
+                    }
+                }
+
                 if (mHoverCell != null) {
                     if (mDropListener != null) {
                         mDropListener.onActionDrop();
@@ -643,6 +711,11 @@ public class DynamicGridView extends GridView {
             }
             //交换list中的数据
             reorderElements(originalPosition, targetPosition);
+
+            if (mUndoSupportEnabled) {
+                mCurrentModification.addTransition(originalPosition, targetPosition);
+            }
+
             /**
              * 移动后 如果有找到新的位置 mDownX mDownY更新
              */
@@ -1018,5 +1091,32 @@ public class DynamicGridView extends GridView {
         }
     };
 
+    /***
+     * 管理图标位置
+     * @author zhenghonglin_91
+     *
+     */
+    private static class DynamicGridModification {
+
+        private List<Pair<Integer, Integer>> transitions;
+
+        DynamicGridModification() {
+            super();
+            this.transitions = new Stack<Pair<Integer, Integer>>();
+        }
+
+        public boolean hasTransitions() {
+            return !transitions.isEmpty();
+        }
+
+        public void addTransition(int oldPosition, int newPosition) {
+            transitions.add(new Pair<Integer, Integer>(oldPosition, newPosition));
+        }
+
+        public List<Pair<Integer, Integer>> getTransitions() {
+            Collections.reverse(transitions);
+            return transitions;
+        }
+    }
 }
 
