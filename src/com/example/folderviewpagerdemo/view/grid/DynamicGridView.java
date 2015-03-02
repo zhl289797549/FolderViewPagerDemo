@@ -601,7 +601,7 @@ public class DynamicGridView extends GridView {
         float vX = 0;
         float vY = 0;
         Point mobileColumnRowPair = getColumnAndRowForView(mMobileView);
-        //找目标view
+        //找目标view  只找一个view
         for (Long id : idList) {
             View view = getViewForId(id);
             if (view != null) {
@@ -622,12 +622,17 @@ public class DynamicGridView extends GridView {
                         && deltaXTotal > view.getLeft() + mOverlapIfSwitchStraightLine
                         || left(targetColumnRowPair, mobileColumnRowPair)
                         && deltaXTotal < view.getRight() - mOverlapIfSwitchStraightLine)) {
+                	//取宽度 高度相减 一般都为0
                     float xDiff = Math.abs(DynamicGridUtils.getViewX(view) - DynamicGridUtils.getViewX(mMobileView));
                     float yDiff = Math.abs(DynamicGridUtils.getViewY(view) - DynamicGridUtils.getViewY(mMobileView));
+                	Log.e("zhenghonglin",view.getLeft()+","+view.getTop()+","+view.getRight()+","+view.getBottom()+",");
+                	Log.e("zhenghonglin",targetColumnRowPair+","+mobileColumnRowPair+","+xDiff+","+yDiff);
                     if (xDiff >= vX && yDiff >= vY) {
                         vX = xDiff;
                         vY = yDiff;
                         targetView = view;
+                    	Log.e("zhenghonglin",getPositionForView(targetView)+","+getPositionForView(mMobileView));
+
                     }
                 }
             }
@@ -658,7 +663,7 @@ public class DynamicGridView extends GridView {
             else                                //Android L
                 switchCellAnimator = new LSwitchCellAnimator(deltaX, deltaY);
 
-            switchCellAnimator = new LSwitchCellAnimator(deltaX, deltaY);
+            switchCellAnimator = new KitKatSwitchCellAnimator(deltaX, deltaY);
             updateNeighborViewsForId(mMobileItemId);
             //最后执行动画
             switchCellAnimator.animateSwitchCell(originalPosition, targetPosition);

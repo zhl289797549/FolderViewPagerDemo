@@ -34,7 +34,7 @@ public class IntegrateFolderPage extends RelativeLayout{
 	
 	private void refresh() {
 		final List<ItemInfo> itemList = info.getItems();
-		gridview.setAdapter(new CheeseDynamicAdapter(context,itemList,3));
+		gridview.setAdapter(new CheeseDynamicAdapter(context,itemList,4));
 	}
 
 	public IntegrateFolderPage(Context context, AttributeSet attrs, int defStyle) {
@@ -57,8 +57,8 @@ public class IntegrateFolderPage extends RelativeLayout{
 		super.onFinishInflate();
 		gridview = (DynamicGridView) findViewById(R.id.folder_content_grid);
 		
-		gridview.setNumColumns(3);
-		gridview.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+//		gridview.setNumColumns(2);
+//		gridview.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
 		
 		gridview.setOnDragListener(new DynamicGridView.OnDragListener() {
             public void onDragStarted(int position) {

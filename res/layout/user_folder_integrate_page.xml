@@ -6,8 +6,8 @@
     <com.example.folderviewpagerdemo.view.grid.DynamicGridView
         android:id="@+id/folder_content_grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="match_parent"
+        android:numColumns="4" />
     <View
         android:id="@+id/folder_page_grid_seperator1"
         android:layout_width="match_parent"
