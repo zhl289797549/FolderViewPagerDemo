@@ -7,10 +7,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,32 +29,18 @@ public class IntegrateFolderPageBak extends RelativeLayout{
 	
 	private void refresh() {
 		final List<ItemInfo> itemList = info.getItems();
-		gridview.setAdapter(new BaseAdapter() {
-			
-			public View getView(int position, View convertView, ViewGroup parent) {
-				convertView = getView(position);
-				return convertView;
-			}
-			
-			public long getItemId(int position) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-			
-			public ItemInfo getItem(int position) {
-				return itemList.get(position);
-			}
-			
-			public int getCount() {
+		gridview.setAdapter(new DragDropGridAdapter() {
+
+			public int itemCount() {
 				return itemList.size();
 			}
-			
-			public View getView(int position){
+
+			public View view(int index) {
 				LinearLayout layout = new LinearLayout(context);
 				layout.setOrientation(LinearLayout.VERTICAL);
 				
 				ImageView icon = new ImageView(context);
-				ItemInfo item = getItem(position);
+				ItemInfo item = (ItemInfo) getItemAt(index);
 				icon.setImageResource(item.getDrawable());
 				icon.setPadding(15, 15, 15, 15);
 				
@@ -76,8 +59,32 @@ public class IntegrateFolderPageBak extends RelativeLayout{
 				layout.addView(label);
 				return layout;
 			}
-			
-		});
+
+			public int rowCount() {
+				return 3;
+			}
+
+			public int columnCount() {
+				return 3;
+			}
+
+			public void printLayout() {
+				
+			}
+
+			public void swapItems(int itemIndexA, int itemIndexB) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void deleteItem(int itemIndex) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public Object getItemAt(int index) {
+				return itemList.get(index);
+			}});
 	}
 
 	public IntegrateFolderPageBak(Context context, AttributeSet attrs, int defStyle) {
@@ -99,8 +106,6 @@ public class IntegrateFolderPageBak extends RelativeLayout{
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 		gridview = (IntegrateFolderGridView) findViewById(R.id.folder_content_grid);
-		gridview.setNumColumns(3);
-		gridview.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
 	}
 	
 	
