@@ -33,6 +33,7 @@ import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.animation.ValueAnimator;
 
 public class DynamicGridView extends GridView {
+	private static final String TAG = "DynamicGridView";
     private static final int INVALID_ID = -1;
 
     private static final int MOVE_DURATION = 300;
@@ -170,6 +171,7 @@ public class DynamicGridView extends GridView {
      * view 长按入口
      */
     public void startEditMode(int position) {
+    	Log.e(TAG,"startEditMode+"+position);
     	Log.e("zhenghonglin","startEditMode==="+position);
         if (!mIsEditModeEnabled)
             return;
@@ -323,9 +325,17 @@ public class DynamicGridView extends GridView {
         }
         return null;
     }
+    
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    	boolean result = super.onInterceptTouchEvent(ev);
+    	Log.e(TAG,"onInterceptTouchEvent+"+ev.getAction() +","+result);
+    	return result;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+    	Log.e(TAG,"onTouchEvent:"+event.getAction());
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
             	Log.e("zhenghonglin","onTouchEvent===");
@@ -357,7 +367,7 @@ public class DynamicGridView extends GridView {
                 mLastEventX = (int) event.getX(pointerIndex);
                 int deltaY = mLastEventY - mDownY;
                 int deltaX = mLastEventX - mDownX;
-
+                Log.e(TAG,"onTouchEvent:move+"+mCellIsMobile+","+mLastEventY+","+mLastEventX+","+mDownY+","+mDownX);
                 if (mCellIsMobile) {
                     mHoverCellCurrentBounds.offsetTo(mHoverCellOriginalBounds.left + deltaX + mTotalOffsetX,
                             mHoverCellOriginalBounds.top + deltaY + mTotalOffsetY);
@@ -366,7 +376,7 @@ public class DynamicGridView extends GridView {
                     handleCellSwitch();
                     mIsMobileScrolling = false;
                     handleMobileCellScroll();
-                    return false;
+                    return true;
                 }
                 break;
 
@@ -405,10 +415,17 @@ public class DynamicGridView extends GridView {
             default:
                 break;
         }
-
-        return super.onTouchEvent(event);
+        boolean result = super.onTouchEvent(event);
+        Log.e(TAG,"onTouchEvent:result+"+result);
+        return result;
     }
 
+    @Override
+    public void requestLayout() {
+    	super.requestLayout();
+    	Log.e(TAG,"requestLayout+============");
+    }
+    
     /**
      * 开始拖动指定position的View
      * @param position

@@ -22,7 +22,7 @@ public class IntegrateFolder extends RelativeLayout {
 	private ViewPager viewPager;
 	private PagerTabStrip pagerTabStrip;
 
-	private List<IntegrateFolderPageBak> folderPageList;
+	private List<IntegrateFolderPage> folderPageList;
 	private List<FolderInfo> folderInfoList;
 	private Context context;
 
@@ -56,11 +56,11 @@ public class IntegrateFolder extends RelativeLayout {
 				.setBackgroundColor(getResources().getColor(R.color.azure));
 		pagerTabStrip.setTextSpacing(50);
 
-		folderPageList = new ArrayList<IntegrateFolderPageBak>();
+		folderPageList = new ArrayList<IntegrateFolderPage>();
 		LayoutInflater lf = LayoutInflater.from(context);
 		for (FolderInfo info : folderInfoList) {
-			IntegrateFolderPageBak page = (IntegrateFolderPageBak) lf.inflate(
-					R.layout.user_folder_integrate_page_bak, null);
+			IntegrateFolderPage page = (IntegrateFolderPage) lf.inflate(
+					R.layout.user_folder_integrate_page, null);
 			page.setFolderInfo(info);
 			folderPageList.add(page);
 		}
