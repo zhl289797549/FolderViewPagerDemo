@@ -25,6 +25,7 @@ import android.widget.GridView;
 import android.widget.ListAdapter;
 
 import com.example.folderviewpagerdemo.R;
+import com.example.folderviewpagerdemo.data.ItemInfo;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.AnimatorSet;
@@ -231,9 +232,12 @@ public class DynamicGridView extends GridView {
     }
 
     private void reorderElements(int originalPosition, int targetPosition) {
-        if (mDragListener != null)
+        Log.e("NewTest","reorderElements:"+originalPosition+","+targetPosition);
+    	if (mDragListener != null)
             mDragListener.onDragPositionsChanged(originalPosition, targetPosition);
         getAdapterInterface().reorderItems(originalPosition, targetPosition);
+        Log.e(TAG,"reorderElements========:");
+        printInfo();
     }
 
     private int getColumnCount() {
@@ -382,6 +386,7 @@ public class DynamicGridView extends GridView {
 
             case MotionEvent.ACTION_UP:
                 touchEventsEnded();
+                Log.e("NewTest","ACTION_UP");
                 if (mHoverCell != null) {
                     if (mDropListener != null) {
                         mDropListener.onActionDrop();
@@ -391,7 +396,7 @@ public class DynamicGridView extends GridView {
 
             case MotionEvent.ACTION_CANCEL:
                 touchEventsCancelled();
-
+                Log.e("NewTest","ACTION_CANCEL");
                 if (mHoverCell != null) {
                     if (mDropListener != null) {
                         mDropListener.onActionDrop();
@@ -424,8 +429,17 @@ public class DynamicGridView extends GridView {
     public void requestLayout() {
     	super.requestLayout();
     	Log.e(TAG,"requestLayout+============");
+    	printInfo();
     }
     
+    private void printInfo(){
+        for (int pos = getFirstVisiblePosition(); pos <= getLastVisiblePosition(); pos++) {
+            View view = getViewForId(getId(pos));
+            String title = (String) view.getTag(R.string.app_name);
+            ItemInfo itemInfo = (ItemInfo) getAdapter().getItem(pos);
+        	Log.e("NewTest","pos:"+pos+",id:"+getId(pos)+",title:"+title+",title1:"+itemInfo.getName());
+        }
+    }
     /**
      * 开始拖动指定position的View
      * @param position
@@ -483,6 +497,7 @@ public class DynamicGridView extends GridView {
     @Override
     public void setAdapter(ListAdapter adapter) {
         super.setAdapter(adapter);
+        Log.e(TAG,"setAdapter=============");
     }
 
     private void touchEventsEnded() {
@@ -664,6 +679,7 @@ public class DynamicGridView extends GridView {
                 return;
             }
             //交换list中的数据
+            Log.e(TAG,"reorderElements+============"+originalPosition+","+targetPosition);
             reorderElements(originalPosition, targetPosition);
             /**
              * 移动后 如果有找到新的位置 mDownX mDownY更新
@@ -680,7 +696,7 @@ public class DynamicGridView extends GridView {
             else                                //Android L
                 switchCellAnimator = new LSwitchCellAnimator(deltaX, deltaY);
 
-            switchCellAnimator = new KitKatSwitchCellAnimator(deltaX, deltaY);
+            switchCellAnimator = new LSwitchCellAnimator(deltaX, deltaY);
             updateNeighborViewsForId(mMobileItemId);
             //最后执行动画
             switchCellAnimator.animateSwitchCell(originalPosition, targetPosition);

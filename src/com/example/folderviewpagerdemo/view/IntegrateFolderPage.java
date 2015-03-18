@@ -105,16 +105,19 @@ public class IntegrateFolderPage extends RelativeLayout{
 	    private class CheeseViewHolder {
 	        private TextView titleText;
 	        private ImageView image;
-
+	        private View view;
 	        private CheeseViewHolder(View view) {
+	        	this.view = view;
 	            titleText = (TextView) view.findViewById(R.id.item_title);
 	            image = (ImageView) view.findViewById(R.id.item_img);
+
 	        }
 
 	        void build(Object info) {
 	        	ItemInfo itemInfo = (ItemInfo) info;
 	            titleText.setText(itemInfo.getName());
 	            image.setImageResource(itemInfo.getDrawable());
+	            view.setTag(R.string.app_name, itemInfo.getName());
 	        }
 	    }
 	}
